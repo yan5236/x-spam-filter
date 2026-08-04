@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X 垃圾机器人过滤器
-// @namespace    https://github.com/your-username/x-spam-filter
-// @version      3.0
+// @namespace    https://github.com/yan5236/x-spam-filter
+// @version      1.0
 // @description  屏蔽 X 上的垃圾推广机器人评论和帖子
 // @match        https://x.com/*
 // @match        https://twitter.com/*
