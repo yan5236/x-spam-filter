@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+
+  "hard_patterns": [
+    {
+      "pattern": "比.{0,5}好看的.*没.{0,5}骚.*比.{0,5}骚的.*没.{0,5}好看",
+      "score": 8,
+      "reason": "固定擦边机器人模板"
+    },
+    {
+      "pattern": "应该没人比我.*玩.*开",
+      "score": 5,
+      "reason": "机器人广告模板"
+    },
+    {
+      "pattern": "有人想锐评一下",
+      "score": 5,
+      "reason": "引流模板"
+    }
+  ],
+
+
+  "keywords": [
+    {
+      "word": "同城",
+      "score": 3
+    },
+    {
+      "word": "上门",
+      "score": 3
+    },
+    {
+      "word": "喝茶",
+      "score": 4
+    },
+    {
+      "word": "选妃",
+      "score": 5
+    },
+    {
+      "word": "骚",
+      "score": 1
+    },
+    {
+      "word": "涩",
+      "score": 1
+    }
+  ],
+
+
+  "name_patterns":[
+    {
+      "pattern":"[🌸♥❤️]",
+      "score":2
+    }
+  ],
+
+
+  "username_rules":[
+    {
+      "pattern":"^[A-Za-z]+[A-Za-z0-9]{5,}$",
+      "score":2
+    }
+  ],
+
+
+  "emoji_limit":{
+    "count":4,
+    "score":1
+  }
+}
