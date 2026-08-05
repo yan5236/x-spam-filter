@@ -1,165 +1,134 @@
 // ==UserScript==
 // @name         X 垃圾机器人过滤器
 // @namespace    https://github.com/yan5236/x-spam-filter
-// @version      1.0
-// @description  屏蔽 X 上的垃圾推广机器人评论和帖子
+// @version      2.0.0
+// @description  基于远程规则集过滤 X 垃圾机器人评论和帖子
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @license      MIT
-// @grant        none
+// @grant        GM_xmlhttpRequest
+// @connect      raw.githubusercontent.com
+// @run-at       document-start
 // ==/UserScript==
 
 
 (function(){
 
-'use strict';
+"use strict";
 
 
 
-function spamScore(article){
-
-    let score = 0;
-
-
-    const text =
-        article.innerText
-        .replace(/\s+/g,"");
+const FILTER_URL =
+"https://raw.githubusercontent.com/yan5236/x-spam-filter/main/filters.json";
 
 
-    // 高置信模板
-    const hardPatterns=[
-        /应该没人比我.*玩.*开/,
-        /我福不黑不信你看/,
-        /我果然太涩了/,
-        /有人想锐评一下/,
-        /比我好看的没我骚/,
-        /比我骚的没我好看/
-    ];
+
+let FILTER={
+
+    hard_patterns:[],
+    keywords:[],
+    name_patterns:[],
+    username_rules:[],
+    structure_rules:[],
+    emoji_limit:{
+        count:4,
+        score:1
+    }
+
+};
 
 
-    for(const r of hardPatterns){
 
-        if(r.test(text)){
-            score += 5;
+
+
+// ===============================
+// 加载远程规则
+// ===============================
+
+function loadFilter(){
+
+
+return new Promise((resolve)=>{
+
+
+GM_xmlhttpRequest({
+
+    method:"GET",
+
+    url:
+    FILTER_URL+
+    "?t="+Date.now(),
+
+
+    timeout:8000,
+
+
+    onload:function(res){
+
+
+        try{
+
+
+            let json=
+            JSON.parse(
+                res.responseText
+            );
+
+
+            console.log(
+                "[X Spam Filter] 规则加载成功",
+                json.version
+            );
+
+
+            resolve(json);
+
+
         }
+        catch(e){
 
-    }
+            console.error(
+                "[X Spam Filter] JSON解析失败",
+                e
+            );
 
-
-
-    // 作者名字
-    const name =
-    article.querySelector(
-        '[data-testid="User-Name"]'
-    )?.innerText || "";
-
-
-
-    if(/[🌸♥❤️]/.test(name)){
-        score+=2;
-    }
-
-
-
-    if(
-        /同城|上门|丄门|喝茶|选妃/
-        .test(text)
-    ){
-
-        score+=3;
-
-    }
-
-
-
-    // 擦边词（降低权重）
-
-    if(
-        /涩|骚/
-        .test(text)
-    ){
-        score+=1;
-    }
-
-
-
-    // emoji数量
-
-    const emoji =
-        text.match(
-        /[\u{1F300}-\u{1FAFF}]/gu
-        ) || [];
-
-
-    if(emoji.length>=4){
-        score+=1;
-    }
-
-
-
-
-    // 随机机器人用户名
-
-    const username =
-    text.match(/@[A-Za-z0-9_]+/)?.[0];
-
-
-    if(username){
-
-        let u=username.substring(1);
-
-
-        if(
-            /^[A-Za-z]+[A-Za-z0-9]{5,}$/
-            .test(u)
-        ){
-
-            score+=2;
+            resolve(FILTER);
 
         }
 
-    }
+
+    },
 
 
-
-    return score;
-
-}
+    onerror:function(){
 
 
-
-
-
-function scan(){
-
-
-document.querySelectorAll("article")
-.forEach(article=>{
-
-
-    if(article.dataset.checked)
-        return;
-
-
-    article.dataset.checked="1";
-
-
-    let score=spamScore(article);
-
-
-
-    if(score>=5){
-
-        article.style.display="none";
-
-        console.log(
-        "[屏蔽垃圾]",
-        score,
-        article.innerText.slice(0,80)
+        console.warn(
+            "[X Spam Filter] 规则加载失败，使用本地规则"
         );
 
+
+        resolve(FILTER);
+
+
+    },
+
+
+    ontimeout:function(){
+
+
+        console.warn(
+            "[X Spam Filter] 规则加载超时"
+        );
+
+
+        resolve(FILTER);
+
+
     }
 
+
+});
 
 
 });
@@ -171,7 +140,346 @@ document.querySelectorAll("article")
 
 
 
+
+
+function regexMatch(pattern,text){
+
+
+try{
+
+
+return new RegExp(
+pattern,
+"i"
+)
+.test(text);
+
+
+}
+catch(e){
+
+return false;
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// 垃圾评分
+// ===============================
+
+
+function spamScore(article){
+
+
+let score=0;
+
+
+
+const text =
+article.innerText
+.replace(/\s+/g,"");
+
+
+
+
+// 固定模板
+
+for(
+const rule of FILTER.hard_patterns || []
+){
+
+
+if(
+regexMatch(
+rule.pattern,
+text
+)
+){
+
+
+score += rule.score || 1;
+
+
+console.log(
+"[命中模板]",
+rule.reason
+);
+
+
+}
+
+
+}
+
+
+
+
+
+
+// 关键词
+
+
+for(
+const rule of FILTER.keywords || []
+){
+
+
+if(
+text.includes(
+rule.word
+)
+){
+
+
+score += rule.score || 1;
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+// 用户名
+
+
+const name =
+article.querySelector(
+'[data-testid="User-Name"]'
+)?.innerText || "";
+
+
+
+for(
+const rule of FILTER.name_patterns || []
+){
+
+
+if(
+regexMatch(
+rule.pattern,
+name
+)
+){
+
+
+score += rule.score || 1;
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+// 用户ID
+
+
+const username =
+text.match(
+/@[A-Za-z0-9_]+/
+)?.[0];
+
+
+
+if(username){
+
+
+const u =
+username.substring(1);
+
+
+
+for(
+const rule of FILTER.username_rules || []
+){
+
+
+if(
+regexMatch(
+rule.pattern,
+u
+)
+){
+
+
+score += rule.score || 1;
+
+
+}
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+// 结构规则
+
+
+for(
+const rule of FILTER.structure_rules || []
+){
+
+
+if(
+regexMatch(
+rule.pattern,
+text
+)
+){
+
+
+score += rule.score || 1;
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+// emoji数量
+
+
+let emoji =
+text.match(
+/[\u{1F300}-\u{1FAFF}]/gu
+)
+||[];
+
+
+
+
+if(
+FILTER.emoji_limit &&
+emoji.length >= FILTER.emoji_limit.count
+){
+
+
+score += FILTER.emoji_limit.score;
+
+
+}
+
+
+
+
+
+
+return score;
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// 扫描
+// ===============================
+
+
+function scan(){
+
+
+
+document
+.querySelectorAll("article")
+.forEach(article=>{
+
+
+if(article.dataset.spamChecked)
+return;
+
+
+
+article.dataset.spamChecked="1";
+
+
+
+let score =
+spamScore(article);
+
+
+
+
+if(score>=5){
+
+
+article.style.display="none";
+
+
+console.log(
+"[屏蔽垃圾机器人]",
+score,
+article.innerText.slice(0,120)
+);
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+async function main(){
+
+
+FILTER =
+await loadFilter();
+
+
+
 scan();
+
 
 
 new MutationObserver(scan)
@@ -182,6 +490,14 @@ childList:true,
 subtree:true
 }
 );
+
+
+}
+
+
+
+
+main();
 
 
 
