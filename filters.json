@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
 
   "hard_patterns": [
     {
@@ -32,14 +32,27 @@
       "score": 6,
       "reason": "擦边模板"
     },
+
     {
-      "pattern": "比.{0,10}(我|她|他|它)?好看.{0,10}没.{0,10}(我|她|他|它)?骚.{0,10}比.{0,10}骚的.{0,10}没.{0,10}好看",
+      "pattern": "催情.*春.*男用.*听话",
+      "score": 10,
+      "reason": "色情药品广告"
+    },
+    {
+      "pattern": "男用.*听话",
       "score": 8,
-      "reason": "变种擦边机器人"
+      "reason": "色情广告"
+    },
+    {
+      "pattern": "催情.*💊",
+      "score": 8,
+      "reason": "色情药品广告"
     }
   ],
 
+
   "keywords": [
+
     {
       "word": "同城",
       "score": 3
@@ -59,8 +72,23 @@
     {
       "word": "选妃",
       "score": 5
+    },
+
+    {
+      "word": "催情",
+      "score": 8
+    },
+    {
+      "word": "听话",
+      "score": 5
+    },
+    {
+      "word": "男用",
+      "score": 5
     }
+
   ],
+
 
   "name_patterns": [
     {
@@ -69,23 +97,44 @@
     }
   ],
 
+
   "username_rules": [
+
     {
       "pattern": "^[A-Za-z]{2,8}[0-9]{5,}$",
       "score": 1
     },
+
     {
-      "pattern": "^[A-Za-z]{1,5}[0-9]{6,}$",
-      "score": 1
+      "pattern": "^[A-Za-z]+[0-9]+[A-Za-z]+[0-9]*$",
+      "score": 2,
+      "reason": "随机生成账号"
     }
+
   ],
 
+
   "structure_rules": [
+
     {
       "pattern": "(骚|涩).{0,6}[A-Za-z0-9]{1,5}.{0,6}(比|没|好看)",
       "score": 5
+    },
+
+    {
+      "pattern": "^[A-Za-z0-9]{1,3}$",
+      "score": 4,
+      "reason": "单字符刷屏回复"
+    },
+
+    {
+      "pattern": "^[0-9]{1,3}$",
+      "score": 4,
+      "reason": "数字刷屏回复"
     }
+
   ],
+
 
   "emoji_limit": {
     "count": 8,
