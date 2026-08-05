@@ -1,21 +1,41 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
 
   "hard_patterns": [
     {
-      "pattern": "比.{0,5}好看的.*没.{0,5}骚.*比.{0,5}骚的.*没.{0,5}好看",
-      "score": 8,
-      "reason": "固定擦边机器人模板"
-    },
-    {
       "pattern": "应该没人比我.*玩.*开",
       "score": 5,
-      "reason": "机器人广告模板"
+      "reason": "固定引流模板"
+    },
+    {
+      "pattern": "我福不黑不信你看",
+      "score": 5,
+      "reason": "机器人固定文案"
+    },
+    {
+      "pattern": "我果然太涩了",
+      "score": 5,
+      "reason": "擦边机器人模板"
     },
     {
       "pattern": "有人想锐评一下",
       "score": 5,
-      "reason": "引流模板"
+      "reason": "诱导互动模板"
+    },
+    {
+      "pattern": "比我好看的没我骚",
+      "score": 5,
+      "reason": "擦边机器人模板"
+    },
+    {
+      "pattern": "比我骚的没我好看",
+      "score": 5,
+      "reason": "擦边机器人模板"
+    },
+    {
+      "pattern": "比.{0,10}(我|她|他|它)?好看.{0,10}没.{0,10}(我|她|他|它)?骚.{0,10}比.{0,10}骚的.{0,10}没.{0,10}好看",
+      "score": 8,
+      "reason": "变种擦边机器人模板"
     }
   ],
 
@@ -23,49 +43,86 @@
   "keywords": [
     {
       "word": "同城",
-      "score": 3
+      "score": 3,
+      "reason": "色情引流"
     },
     {
       "word": "上门",
-      "score": 3
+      "score": 3,
+      "reason": "色情引流"
+    },
+    {
+      "word": "丄门",
+      "score": 3,
+      "reason": "绕过检测"
     },
     {
       "word": "喝茶",
-      "score": 4
+      "score": 4,
+      "reason": "色情暗语"
     },
     {
       "word": "选妃",
-      "score": 5
-    },
-    {
-      "word": "骚",
-      "score": 1
+      "score": 5,
+      "reason": "色情暗语"
     },
     {
       "word": "涩",
-      "score": 1
-    }
-  ],
-
-
-  "name_patterns":[
+      "score": 1,
+      "reason": "擦边词"
+    },
     {
-      "pattern":"[🌸♥❤️]",
-      "score":2
+      "word": "骚",
+      "score": 1,
+      "reason": "擦边词"
     }
   ],
 
 
-  "username_rules":[
+  "name_patterns": [
     {
-      "pattern":"^[A-Za-z]+[A-Za-z0-9]{5,}$",
-      "score":2
+      "pattern": "[🌸♥❤️]",
+      "score": 2,
+      "reason": "异常机器人昵称"
     }
   ],
 
 
-  "emoji_limit":{
-    "count":4,
-    "score":1
+  "username_rules": [
+    {
+      "pattern": "^[A-Za-z]+[A-Za-z0-9]{5,}$",
+      "score": 2,
+      "reason": "随机机器人账号"
+    },
+    {
+      "pattern": "^[A-Za-z]{3,}[0-9]{1,4}$",
+      "score": 1,
+      "reason": "批量生成账号"
+    }
+  ],
+
+
+  "structure_rules": [
+    {
+      "pattern": "[\\u4e00-\\u9fa5]{2,}[A-Za-z0-9]{2,}[\\u4e00-\\u9fa5]{1,}",
+      "score": 2,
+      "reason": "中文模板插入随机字符"
+    },
+    {
+      "pattern": "[A-Za-z0-9]{2,}$",
+      "score": 2,
+      "reason": "正文末尾随机字符"
+    },
+    {
+      "pattern": "@[A-Za-z0-9_]+\\s*[A-Za-z0-9]{1,5}$",
+      "score": 2,
+      "reason": "账号加随机尾巴"
+    }
+  ],
+
+
+  "emoji_limit": {
+    "count": 4,
+    "score": 1
   }
 }
